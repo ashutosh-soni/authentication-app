@@ -1,7 +1,7 @@
 const fs = require("fs");
 
 // global config object
-config = {};
+let _config = {};
 
 init = async function (){
     try{
@@ -13,26 +13,26 @@ init = async function (){
                 console.log("Config init for:", activeEnv);
                 data = require("./prod/prod-config.json");
                 newConfig = Object.assign({}, commonConfig, data);
-                config = newConfig;
+                _config = newConfig;
                 resolve({err: false,
-                         data: config});
+                         data: _config});
                 break;
             case "test":
                 console.log("Config init for:", activeEnv);
                 data = require("./test/test-config.json");
                 newConfig = Object.assign({}, commonConfig, data);
-                config = newConfig;
+                _config = newConfig;
                 resolve({err: false,
-                         data: config});
+                         data: _config});
                 break;
             default:
                 // default Env is DEV
                 console.log("Config init for:", activeEnv);
                 data = require("./dev/dev-config.json");
                 newConfig = Object.assign({}, commonConfig, data);
-                config = newConfig;
+                _config = newConfig;
                 resolve({err: false,
-                         data: config});
+                         data: _config});
 
 
 
@@ -40,9 +40,14 @@ init = async function (){
 
         });
     } catch(e){
-        console.log("Config init Failed", e);
+        console.log("Config init Failed");
+        throw new Error(e.message);
     }
 
 };
 
-module.exports = {init, config};
+function getConfig(){
+    return _config;
+}
+
+module.exports = {init, getConfig};

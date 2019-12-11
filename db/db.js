@@ -1,12 +1,9 @@
 const MongoClient = require("mongodb").MongoClient;
-var url = "mongodb://localhost:27017";
+const configModule = require("../config/config.js");
 
 var state = {db:null};
-var dbName = "authentication-app";
-var collName = "accounts";
 
-
-var connect = function(url, done){
+var connect = function(url, dbName, done){
     if (state.db) return done();
     MongoClient.connect(url,
                         {useUnifiedTopology: true,
@@ -23,24 +20,34 @@ function get(){
 }
 
 init = async function(){
-    return new Promise((resolve, reject) =>
-                       {connect(url, function(err){
-                           if(err){
-                               console.log("Unable to conncet mongodb");
-                               reject({err: err});
-                               // process.exit(1);
-                           } else{
-                               console.log("Database connected Successfuly!");
-                               resolve({err: false});
-                           }
-                       });
-                       });
+    let config = configModule.getConfig();
+    let url = config ["db-spec"] ["url"];
+    let dbName = config ["db-spec"] ["dbName"];
+    try{
+        return new Promise((resolve, reject) =>
+                           {connect(url, dbName, function(err){
+                               if(err){
+                                   console.log("Unable to conncet mongodb");
+                                   console.log("Application Terminate here.");
+                                   reject({err: err});
+                                   process.exit(1);
+                               } else{
+                                   console.log("Database connected Successfuly!");
+                                   resolve({err: false});
+                               }
+                           });
+                           });
+    }catch (e){
+        throw new Error (e.message);
+    }
 
 };
 
 insert = async function(doc){
+    let collName = configModule.getConfig() ["db-spec"] ["collName"];
+
     try{
-        const db = get();
+        let db = get();
         var collection = db.collection(collName);
         if (data != null){
             collection.insertOne(doc, function(err, result){
