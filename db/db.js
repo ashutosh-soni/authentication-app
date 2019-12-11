@@ -44,8 +44,9 @@ insert = async function(doc){
         var collection = db.collection(collName);
         if (data != null){
             collection.insertOne(doc, function(err, result){
-                if (err) { console.log("Sorry data insertion failed", err)
-                           return err};
+                if (err) {
+                    console.log("Sorry data insertion failed", err);
+                    return err;}
                 console.log("Data is inserted successfully!", result);});
         }
     }catch(e) {

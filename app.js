@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const multer = require("multer");
 const routes = require("./routes");
 const db = require("./db/db.js");
+const config = require("./config/config.js");
 
 const app = express();
 app.use(bodyParser.json());
@@ -15,9 +16,11 @@ app.get("/", function(req, res){
 });
 
 const init = async function(){
+    cf = await config.init();
+    port = cf["data"]["port"];
     await db.init();
-    app.listen(3000, function(){
-        console.log("App started at port: 3000");
+    app.listen(port, function(){
+        console.log("App started at port:", port);
     });
 }
 init();
