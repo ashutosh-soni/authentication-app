@@ -4,6 +4,7 @@ const multer = require("multer");
 const routes = require("./routes");
 const db = require("./db/db.js");
 const config = require("./config/config.js");
+const apiResponse = require("./utils/apiResponse.js");
 
 const app = express();
 app.use(bodyParser.json());
@@ -14,6 +15,9 @@ app.use("/api", routes);
 app.get("/", function(req, res){
     res.send("App is working!");
 });
+app.all("*", (req, res) => {
+    return apiResponse.notFoundResponse(res, "Page Not found");
+});
 
 const init = async function(){
     cf = await config.init();
@@ -22,5 +26,5 @@ const init = async function(){
     app.listen(port, function(){
         console.log("App started at port:", port);
     });
-}
+};
 init();
