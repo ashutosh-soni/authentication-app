@@ -1,7 +1,19 @@
 const MongoClient = require("mongodb").MongoClient;
 const configModule = require("../config/config.js");
 
-var state = {db:null};
+let state = {db:null};
+
+const rejectResponse = function (err){
+    return {status: 0, err: err};
+};
+
+const resolveResponse = function (result){
+    return {status: 1, result: result};
+};
+
+const getCollection = function (){
+    return configModule.getConfig() ["db-spec"] ["collName"];
+};
 
 var connect = function(url, dbName, done){
     if (state.db) return done();
@@ -13,13 +25,13 @@ var connect = function(url, dbName, done){
                             state.db = client.db(dbName);
                             // console.log("db object is:",state.db);
                             done();});
-}
+};
 
-function get(){
+const get = function (){
     return state.db;
 }
 
-init = async function(){
+exports.init = async function(){
     let config = configModule.getConfig();
     let url = config ["db-spec"] ["url"];
     let dbName = config ["db-spec"] ["dbName"];
@@ -43,22 +55,51 @@ init = async function(){
 
 };
 
-insert = async function(doc){
-    let collName = configModule.getConfig() ["db-spec"] ["collName"];
+/**
+ * Insert function insert doc in mongodb.
+ * NOTE: There is no condition check is done here,
+ *       Everything is verified in service layer.
+ * @params {object} doc
+ * @params {function} callback
+ */
+exports.insert = async function(doc){
+    let collName = getCollection();
+    let db = get();
+    let collection = db.collection(collName);
+    return new Promise((resolve, reject) => {
+        collection.insertOne(doc, (err, result) => {
+            if(err){
+                reject(rejectResponse(err));
+            }else {
+                resolve(resolveResponse(result));
+            }
+        });
+    });
 
-    try{
-        let db = get();
-        var collection = db.collection(collName);
-        if (data != null){
-            collection.insertOne(doc, function(err, result){
-                if (err) {
-                    console.log("Sorry data insertion failed", err);
-                    return err;}
-                console.log("Data is inserted successfully!", result);});
-        }
-    }catch(e) {
-        throw new Error(e.message);}
+};
 
-}
 
-module.exports = {init, insert, get};
+/**
+ * findOne function find doc in mongodb.
+ * NOTE: There is no condition check is done here,
+ *       Everything is verified in service layer.
+ * @params {object} query
+ * @params {function} callback
+ */
+exports.findOne = async function(query){
+    let collName = getCollection();
+    let db = get();
+    let collection = db.collection(collName);
+
+    return new Promise ((resolve, reject) => {
+        collection.findOne(query, (err, result) => {
+            if(err){
+                reject(rejectResponse(err));
+            }else {
+                resolve(resolveResponse(result));
+            }
+
+        });
+
+    });
+};

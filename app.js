@@ -12,9 +12,11 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 
 app.use("/api", routes);
+
 app.get("/", function(req, res){
     res.send("App is working!");
 });
+
 app.all("*", (req, res) => {
     return apiResponse.notFoundResponse(res, "Page Not found");
 });
@@ -27,4 +29,5 @@ const init = async function(){
         console.log("App started at port:", port);
     });
 };
+
 init();
