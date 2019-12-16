@@ -1,7 +1,9 @@
 {"version": "1.0.0",
-"port": 4000,
+ "port": 4000,
  "env":"dev",
  "db-spec": {"url":"mongodb://localhost:27017",
              "dbName": "authentication-app",
-             "collName": "accounts"}
+             "collName": "accounts"},
+ "jwt": {"privateKey": "",
+         "publicKey": ""}
 }

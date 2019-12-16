@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const multer = require("multer");
-const routes = require("./routes");
+const authRoutes = require("./routes/authRoutes.js");
 const db = require("./db/db.js");
 const config = require("./config/config.js");
 const apiResponse = require("./utils/apiResponse.js");
@@ -11,7 +11,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
 
-app.use("/api", routes);
+app.use("/api", authRoutes);
 
 app.get("/", function(req, res){
     res.send("App is working!");

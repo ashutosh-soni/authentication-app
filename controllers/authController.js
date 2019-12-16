@@ -1,4 +1,4 @@
-const userService = require("../services/userService.js");
+const authService = require("../services/authService.js");
 const {body, validationResult, sanitizeBody} = require("express-validator");
 const apiResponse = require("../utils/apiResponse.js");
 
@@ -29,7 +29,7 @@ exports.register = async function(req, res){
             // Display sanitized values/errors messages.
             return apiResponse.validationErrorWithData(res, "Validation Error.", errors.array());
         } else{
-            await userService.insertUser(req, res);
+            await authService.insertUser(req, res);
         }
 
     }catch(e){
@@ -45,7 +45,7 @@ exports.login= async function(req, res){
             // Display sanitized values/errors messages.
             return apiResponse.validationErrorWithData(res, "Validation Error.", errors.array());
         } else{
-            userService.findUser(req, res);
+            authService.findUser(req, res);
         }
 
     }catch(e){
