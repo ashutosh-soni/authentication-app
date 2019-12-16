@@ -1,23 +1,34 @@
-const fs = require("fs");
-
+const util = require("../utils/utils.js");
 // global config object
 let _config = {};
 
-// MergeObject is the helper function to merge 2 objects.
-const mergeObject = function(obj1, obj2){
-    return Object.assign({}, obj1, obj2);
-};
+
+function addJwtConfig(object, privateKey, publicKey){
+    let jwtConfig = {"jwt": {"privateKey": privateKey,
+                             "publicKey": publicKey}
+                    };
+    return util.mergeObject(object, jwtConfig);
+
+}
+
 
 const init = async function (){
     try{
         return new Promise((resolve, reject) =>{
+            // get NODE_ENV from Enviroment varaible.
             let activeEnv = process.env.NODE_ENV || "dev";
+            // get JWT_PRIVATE_KEY
+            let jwtPrivateKey = process.env.JWT_PRIVATE_KEY;
+            // get JWT_PUBLIC_KEY
+            let jwtPublicKey = process.env.JWT_PUBLIC_KEY;
+
             commonConfig = require("./common.json");
+            commonConfig = addJwtConfig(commonConfig, jwtPrivateKey, jwtPublicKey);
             switch(activeEnv){
             case "prod":
                 console.log("Config init for:", activeEnv);
                 data = require("./prod/prod-config.json");
-                newConfig = mergeObject(commonConfig, data);
+                newConfig = util.mergeObject(commonConfig, data);
                 _config = newConfig;
                 resolve({err: false,
                          data: _config});
@@ -25,7 +36,7 @@ const init = async function (){
             case "test":
                 console.log("Config init for:", activeEnv);
                 data = require("./test/test-config.json");
-                newConfig = mergeObject(commonConfig, data);
+                newConfig = util.mergeObject(commonConfig, data);
                 _config = newConfig;
                 resolve({err: false,
                          data: _config});
@@ -34,7 +45,7 @@ const init = async function (){
                 // default Env is DEV
                 console.log("Config init for:", activeEnv);
                 data = require("./dev/dev-config.json");
-                newConfig = mergeObject(commonConfig, data);
+                newConfig = util.mergeObject(commonConfig, data);
                 _config = newConfig;
                 resolve({err: false,
                          data: _config});
