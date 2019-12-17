@@ -3,10 +3,8 @@ const util = require("../utils/utils.js");
 let _config = {};
 
 
-function addJwtConfig(object, privateKey, publicKey){
-    let jwtConfig = {"jwt": {"privateKey": privateKey,
-                             "publicKey": publicKey}
-                    };
+function addJwtConfig(object, jwtSecret){
+    let jwtConfig = {"jwt": {"secret": jwtSecret}};
     return util.mergeObject(object, jwtConfig);
 
 }
@@ -17,13 +15,12 @@ const init = async function (){
         return new Promise((resolve, reject) =>{
             // get NODE_ENV from Enviroment varaible.
             let activeEnv = process.env.NODE_ENV || "dev";
-            // get JWT_PRIVATE_KEY
-            let jwtPrivateKey = process.env.JWT_PRIVATE_KEY;
-            // get JWT_PUBLIC_KEY
-            let jwtPublicKey = process.env.JWT_PUBLIC_KEY;
+            // get JWT_SECRET
+            let jwtSecret = process.env.JWT_SECRET;
 
             commonConfig = require("./common.json");
-            commonConfig = addJwtConfig(commonConfig, jwtPrivateKey, jwtPublicKey);
+            commonConfig = addJwtConfig(commonConfig, jwtSecret);
+
             switch(activeEnv){
             case "prod":
                 console.log("Config init for:", activeEnv);

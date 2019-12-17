@@ -4,6 +4,5 @@
  "db-spec": {"url":"mongodb://localhost:27017",
              "dbName": "authentication-app",
              "collName": "accounts"},
- "jwt": {"privateKey": "",
-         "publicKey": ""}
+ "jwt": {"secret": ""}
 }
